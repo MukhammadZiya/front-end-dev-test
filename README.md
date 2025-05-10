@@ -74,7 +74,7 @@ npm install
 npm run dev
 ```
 
-Open your browser at `http://localhost:500`
+Open your browser at `http://localhost:5000`
 
 ---
 
