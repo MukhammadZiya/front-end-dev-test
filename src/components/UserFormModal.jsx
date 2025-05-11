@@ -1,134 +1,114 @@
-import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Box,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Modal, Box, TextField, Button, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { addUser, updateUser } from "../store/userSlice";
 
-const UserFormModal = ({ open, setOpen, user, isInline, multiEditUsers }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
-  const [successMsg, setSuccessMsg] = useState("");
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 360,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+  borderRadius: 2,
+};
+
+const UserFormModal = ({ open, setOpen, user, multiEditUsers, isInline }) => {
+  const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const dispatch = useDispatch();
   const { t } = useTranslation();
 
   useEffect(() => {
     if (user) {
-      setFormData(user);
+      setForm(user);
+    } else if (multiEditUsers?.length > 0) {
+      // For multi-edit, initialize with common values or empty
+      setForm({ name: "", email: "", phone: "" });
     } else {
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-      });
+      setForm({ name: "", email: "", phone: "" });
     }
-  }, [user]);
+  }, [user, multiEditUsers]);
 
-  useEffect(() => {
-    if (multiEditUsers?.length > 1) {
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-      });
-    }
-  }, [multiEditUsers]);
-
-  const dispatch = useDispatch();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (multiEditUsers?.length > 1) {
-      multiEditUsers.forEach((u) => {
-        dispatch(updateUser({ ...u, ...formData }));
-      });
-      setSuccessMsg(t("users_updated"));
-    } else if (user?.id) {
-      dispatch(updateUser({ ...user, ...formData }));
-      setSuccessMsg(t("user_updated"));
-    } else {
-      dispatch(addUser({ ...formData, id: Date.now() }));
-      setSuccessMsg(t("user_added"));
-    }
-    if (!isInline) {
-      setOpen(false);
-    }
+  const handleChange = (e) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  return (
-    <>
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
+  const handleSubmit = () => {
+    if (multiEditUsers?.length > 0) {
+      // Update multiple users
+      multiEditUsers.forEach((user) => {
+        dispatch(updateUser({ ...user, ...form }));
+      });
+    } else if (user) {
+      // Update single user
+      dispatch(updateUser({ ...user, ...form }));
+    } else {
+      // Add new user
+      dispatch(addUser({ id: Date.now(), ...form }));
+    }
+    setOpen(false);
+  };
+
+  const handleClose = () => {
+    setForm({ name: "", email: "", phone: "" });
+    setOpen(false);
+  };
+
+  const modalContent = (
+    <Box sx={isInline ? { p: 2 } : style}>
+      <Typography variant="h6" gutterBottom>
+        {multiEditUsers?.length > 0
+          ? t("edit_multiple_users")
+          : user
+          ? t("edit_user")
+          : t("add_user")}
+      </Typography>
+      <TextField
         fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>
-          {multiEditUsers?.length > 1
-            ? t("edit_multiple_users")
-            : user?.id
-            ? t("edit_user")
-            : t("add_user")}
-        </DialogTitle>
-        <form onSubmit={handleSubmit}>
-          <DialogContent>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <TextField
-                label={t("name")}
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                required
-              />
-              <TextField
-                label={t("email")}
-                type="email"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                required
-              />
-              <TextField
-                label={t("phone")}
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-                required
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpen(false)}>{t("cancel")}</Button>
-            <Button type="submit" variant="contained">
-              {user?.id ? t("update") : t("add")}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
-      <Snackbar
-        open={!!successMsg}
-        autoHideDuration={3000}
-        onClose={() => setSuccessMsg("")}
-      >
-        <Alert severity="success" onClose={() => setSuccessMsg("")}>
-          {successMsg}
-        </Alert>
-      </Snackbar>
-    </>
+        label={t("name")}
+        name="name"
+        value={form.name}
+        onChange={handleChange}
+        margin="normal"
+      />
+      <TextField
+        fullWidth
+        label={t("email")}
+        name="email"
+        value={form.email}
+        onChange={handleChange}
+        margin="normal"
+      />
+      <TextField
+        fullWidth
+        label={t("phone")}
+        name="phone"
+        value={form.phone}
+        onChange={handleChange}
+        margin="normal"
+      />
+      <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+        <Button fullWidth variant="outlined" onClick={handleClose}>
+          {t("cancel")}
+        </Button>
+        <Button fullWidth variant="contained" onClick={handleSubmit}>
+          {user || multiEditUsers?.length > 0 ? t("update") : t("add")}
+        </Button>
+      </Box>
+    </Box>
+  );
+
+  if (isInline) {
+    return modalContent;
+  }
+
+  return (
+    <Modal open={open} onClose={handleClose}>
+      {modalContent}
+    </Modal>
   );
 };
 
