@@ -14,13 +14,13 @@ const loadInitialState = () => {
       email: "assembly@factory.com",
       phone: "123-456-7890",
       parentId: null,
-    },
+    }, 
     {
       id: 2,
       name: "Robot Arm A",
       email: "robot.a@factory.com",
       phone: "123-456-7891",
-      parentId: 1,
+      parentId: 1, 
     },
     {
       id: 3,
@@ -35,14 +35,14 @@ const loadInitialState = () => {
       email: "packaging@factory.com",
       phone: "123-456-7893",
       parentId: null,
-    },
+    }, 
     {
       id: 5,
       name: "Conveyor Belt",
       email: "conveyor@factory.com",
       phone: "123-456-7894",
       parentId: 4,
-    },
+    }, 
   ];
 };
 

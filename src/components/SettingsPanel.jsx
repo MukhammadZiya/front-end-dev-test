@@ -24,9 +24,13 @@ import {
 } from "@mui/material";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useTranslation } from "react-i18next";
+import { useThemeContext } from "../theme/ThemeContext";
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
 
 const SettingsPanel = ({ open, onClose, settings, onSave }) => {
   const { t } = useTranslation();
+  const { toggleTheme, mode } = useThemeContext();
   const [activeTab, setActiveTab] = useState(0);
   const [localSettings, setLocalSettings] = useState(settings);
   const [notification, setNotification] = useState({
@@ -68,6 +72,7 @@ const SettingsPanel = ({ open, onClose, settings, onSave }) => {
         message: t("save_success"),
         severity: "success",
       });
+      onClose();
     } catch (error) {
       setNotification({
         open: true,
@@ -109,7 +114,18 @@ const SettingsPanel = ({ open, onClose, settings, onSave }) => {
   return (
     <>
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-        <DialogTitle>{t("table_settings")}</DialogTitle>
+        <DialogTitle
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          {t("table_settings")}
+          <IconButton aria-label="close" onClick={onClose} size="small">
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
           <Tabs value={activeTab} onChange={handleTabChange}>
             <Tab label={t("general_settings")} />
@@ -126,13 +142,8 @@ const SettingsPanel = ({ open, onClose, settings, onSave }) => {
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={localSettings.theme === "dark"}
-                        onChange={(e) =>
-                          handleSettingChange(
-                            "theme",
-                            e.target.checked ? "dark" : "light"
-                          )
-                        }
+                        checked={mode === "dark"}
+                        onChange={toggleTheme}
                       />
                     }
                     label={t("dark_mode")}

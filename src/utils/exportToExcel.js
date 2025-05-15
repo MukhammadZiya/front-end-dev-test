@@ -9,13 +9,13 @@ export const exportUsersToExcel = (users) => {
     [t("phone")]: user.phone,
   }));
 
-  const worksheet = XLSX.utils.json_to_sheet(formattedUsers);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
+  const worksheet = XLSX.utils.json_to_sheet(formattedUsers);  //yangi ro'yxatni excelga yuklash
+  const workbook = XLSX.utils.book_new(); //yangi exeel fayl qilish
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Users"); //ro'yxatni faylga yuklash
 
   // Generate Excel file
-  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-  const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" }); //excel faylni yaratish
+  const blob = new Blob([excelBuffer], { type: "application/octet-stream" }); //blob faylni yaratish
 
   // Save the file
   saveAs(blob, "users.xlsx");

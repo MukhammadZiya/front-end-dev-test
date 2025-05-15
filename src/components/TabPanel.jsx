@@ -18,11 +18,11 @@ const TabPanel = () => {
       default:
         return <Box p={2}>Welcome to the {currentTab} page</Box>;
     }
-  };
+  }; 
 
   const handleChange = (event, newValue) => {
     dispatch(openTab(newValue));
-  };
+  }; 
 
   return (
     <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
@@ -56,7 +56,7 @@ const TabPanel = () => {
           />
         ))}
       </Tabs>
-      <Box p={2} sx={{ flexGrow: 1 }}>
+      <Box p={2} sx={{ flexGrow: 1 }}> 
         {renderTabContent()}
       </Box>
     </Box>

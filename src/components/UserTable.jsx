@@ -604,22 +604,74 @@ const UserTable = () => {
 
   const renderStatusCell = (params) => {
     const user = params.row;
+    // Show marital status if set
+    if (user.maritalStatus) {
+      if (user.maritalStatus === "married") {
+        return (
+          <Box
+            sx={{
+              px: 1,
+              py: 0.5,
+              borderRadius: 1,
+              color: "white",
+              backgroundColor: "success.main",
+              display: "inline-block",
+              fontSize: "0.75rem",
+              fontWeight: 500,
+            }}
+          >
+            Married
+          </Box>
+        );
+      } else if (user.maritalStatus === "not_married") {
+        return (
+          <Box
+            sx={{
+              px: 1,
+              py: 0.5,
+              borderRadius: 1,
+              color: "white",
+              backgroundColor: "info.main",
+              display: "inline-block",
+              fontSize: "0.75rem",
+              fontWeight: 500,
+            }}
+          >
+            Not Married
+          </Box>
+        );
+      } else if (user.maritalStatus === "have_children") {
+        return (
+          <Box
+            sx={{
+              px: 1,
+              py: 0.5,
+              borderRadius: 1,
+              color: "white",
+              backgroundColor: "warning.main",
+              display: "inline-block",
+              fontSize: "0.75rem",
+              fontWeight: 500,
+            }}
+          >
+            {`Have Children: ${user.numberOfChildren || 0}`}
+          </Box>
+        );
+      }
+    }
+    // Fallback to old logic
     const domain = user.email.split("@")[1];
     const hasChildren = getChildRows(user.id).length > 0;
-
     let status = "Active";
     let color = "success.main";
-
     if (!hasChildren) {
       status = "No Children";
       color = "warning.main";
     }
-
     if (user.parentId) {
       status = "Child User";
       color = "info.main";
     }
-
     return (
       <Box
         sx={{
@@ -743,7 +795,7 @@ const UserTable = () => {
                 color="error"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDelete(params.row.id);
+                  askDelete(params.row.id);
                 }}
                 sx={{
                   "&:hover": {
@@ -785,9 +837,10 @@ const UserTable = () => {
     if (formMode === "page") {
       navigate("/form");
     } else if (formMode === "modal") {
+      setEditingUser(null);
       setIsModalOpen(true);
     } else {
-      setEditingUser({});
+      setEditingUser(null);
     }
   };
 
@@ -1365,6 +1418,7 @@ const UserTable = () => {
         canEdit={selectedIds.length === 1}
         canDelete={selectedIds.length === 1}
         users={filteredUsers}
+        onSettingsClick={() => setSettingsOpen(true)}
       />
       <Breadcrumbs aria-label="breadcrumb" sx={{ px: 3, py: 1 }}>
         <Link underline="hover" color="inherit" href="#">

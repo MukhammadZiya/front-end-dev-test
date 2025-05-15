@@ -12,7 +12,7 @@ const uiSlice = createSlice({
   reducers: {
     setFormMode(state, action) {
       state.formMode = action.payload;
-    },
+    }, 
     openTab(state, action) {
       const tab = action.payload;
       if (!state.tabs.includes(tab)) {
@@ -20,7 +20,7 @@ const uiSlice = createSlice({
         state.tabs.push(tab);
       }
       state.currentTab = tab;
-    },
+    }, 
     closeTab(state, action) {
       const tab = action.payload;
       state.tabs = state.tabs.filter((t) => t !== tab);
@@ -29,12 +29,12 @@ const uiSlice = createSlice({
           ? state.tabs[state.tabs.length - 1]
           : "Home";
       }
-    },
+    }, 
     setTab(state, action) {
       state.currentTab = action.payload;
     },
   },
-});
+}); 
 
 export const { setFormMode, openTab, closeTab, setTab } = uiSlice.actions;
 export default uiSlice.reducer;

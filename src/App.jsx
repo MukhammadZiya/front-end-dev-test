@@ -16,7 +16,7 @@ const App = () => {
   };
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    setMobileOpen(!mobileOpen);      //drawersni o'chirish uchun toggle
   };
 
   return (
